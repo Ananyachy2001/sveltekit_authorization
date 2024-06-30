@@ -1,21 +1,25 @@
-// stores/userStore.js
 import { writable } from 'svelte/store';
 
-export const auth = writable(null);
+function createAuthStore() {
+    const { subscribe, set } = writable(null);
 
-export function initialize() {
-  const storedUser = localStorage.getItem('user');
-  if (storedUser) {
-    auth.set(JSON.parse(storedUser));
-  }
+    return {
+        subscribe,
+        login: user => {
+            localStorage.setItem('user', JSON.stringify(user));
+            set(user);
+        },
+        logout: () => {
+            localStorage.removeItem('user');
+            set(null);
+        },
+        initialize: () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                set(user);
+            }
+        }
+    };
 }
 
-export function login(user) {
-  auth.set(user);
-  localStorage.setItem('user', JSON.stringify(user));
-}
-
-export function logout() {
-  auth.set(null);
-  localStorage.removeItem('user');
-}
+export const auth = createAuthStore();
