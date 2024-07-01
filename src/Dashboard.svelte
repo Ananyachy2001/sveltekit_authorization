@@ -1,19 +1,25 @@
 <script>
-  
+  import { auth } from "./stores/userStore";
   import Logout from "./Logout.svelte";
+  
+  let role = '';
+
+  auth.subscribe(({ role: userRole }) => { role = userRole; });
 </script>
 
 <div class="dashboard">
   <h1>Medical Imaging Dashboard</h1>
 
-  <div class="section">
-    <h2>X-ray Images</h2>
-    <ul>
-      <li>View recent X-rays</li>
-      <li>Upload new X-ray images</li>
-      <li>Analyze X-ray data</li>
-    </ul>
-  </div>
+  {#if role === 'admin'}
+    <div class="section">
+      <h2>X-ray Images</h2>
+      <ul>
+        <li>View recent X-rays</li>
+        <li>Upload new X-ray images</li>
+        <li>Analyze X-ray data</li>
+      </ul>
+    </div>
+  {/if}
 
   <div class="section">
     <h2>MRI Scans</h2>
@@ -32,6 +38,8 @@
       <li>CT scan diagnostic tools</li>
     </ul>
   </div>
+
+  <!-- Other sections remain unchanged -->
 
   <Logout />
 </div>

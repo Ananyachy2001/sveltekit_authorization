@@ -1,28 +1,29 @@
-// In userStore.js
+// userStore.js
 import { writable } from 'svelte/store';
 import { navigate } from 'svelte-routing';
 
 function createAuthStore() {
-  const { subscribe, set } = writable(null);
+  const { subscribe, set } = writable({ user: null, role: null });
 
   return {
     subscribe,
-    login: user => {
-      localStorage.setItem('user', JSON.stringify(user));
-      set(user);
+    login: (user, role) => {
+      localStorage.setItem('user', JSON.stringify({ user, role }));
+      set({ user, role });
       navigate('/dashboard');  // Redirect to dashboard after login
     },
     logout: () => {
       localStorage.removeItem('user');
-      set(null);
-      navigate('/login');  // Redirect to login after logout
+      set({ user: null, role: null });
+      navigate('/');  // Redirect to login after logout
     },
     initialize: () => {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (user) {
-        set(user);
+      const data = localStorage.getItem('user');
+      if (data) {
+        const { user, role } = JSON.parse(data);
+        set({ user, role });
       } else {
-        navigate('/login');  // Ensure unauthenticated users are redirected on app load
+        navigate('/');  // Ensure unauthenticated users are redirected on app load
       }
     }
   };
